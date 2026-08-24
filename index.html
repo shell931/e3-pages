@@ -7,8 +7,10 @@
   <meta name="robots" content="noindex, nofollow">
   <style>
     :root { font-family: system-ui, sans-serif; color: #1a1a1a; }
-    body { margin: 0; min-height: 100vh; }
-    body.app { display: grid; grid-template-columns: 280px 1fr; }
+    body { margin: 0; min-height: 100vh; background: #111827; }
+    body.in { background: #f3f4f6; }
+    [hidden] { display: none !important; }
+    #app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
     aside { background: #111827; color: #e5e7eb; padding: 1rem; overflow: auto; }
     aside h2 { margin: 0 0 .65rem; font-size: 1rem; }
     aside a { color: inherit; text-decoration: none; display: flex; justify-content: space-between; gap: .5rem; padding: .4rem .5rem; border-radius: 6px; }
@@ -226,7 +228,7 @@
     function showApp() {
       document.getElementById("gate").hidden = true;
       document.getElementById("app").hidden = false;
-      document.body.classList.add("app");
+      document.body.classList.add("in");
       const go = () => {
         const key = currentKey();
         renderNav(vault.index, key);
