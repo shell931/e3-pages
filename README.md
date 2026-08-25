@@ -1,4 +1,4 @@
-# Visor E-3 (comité)
+# Visor (comité)
 
 Sitio: https://shell931.github.io/e3-pages/
 

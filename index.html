@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IDP local — visor E-3</title>
+  <title>IDP local — visor</title>
   <meta name="robots" content="noindex, nofollow">
   <style>
     :root { font-family: system-ui, sans-serif; color: #1a1a1a; }
@@ -81,7 +81,7 @@
 <body>
   <div id="gate" class="login">
     <form class="card" id="form">
-      <h1>Visor E-3</h1>
+      <h1>Visor</h1>
       <p class="estado" style="color:#9ca3af;text-transform:none;letter-spacing:0">Acceso para el comité. Los datos van cifrados en GitHub Pages.</p>
       <label for="user">Usuario</label>
       <input id="user" name="user" autocomplete="username" required>
@@ -101,7 +101,7 @@
     const SPECS = {
       lote: {
         nav: "Parte 1 · Frente",
-        blurb: "Frente E-3 300 dpi. Resultado cerrado: no se borra al correr finger.",
+        blurb: "Frente 300 dpi. Resultado cerrado: no se borra al correr finger.",
         done: "Terminó. Este es el resultado del load test.",
         note: "Vista Parte 1 · Frente 1.251 (cerrada). No se borra.",
         table: "Documentos parte 1 (frente)",
@@ -479,7 +479,7 @@
       const d = vault.partes.gold || {};
       const rows = d.rows || [];
       document.getElementById("side-note").innerHTML =
-        '<p class="estado">100 frentes E-3 (gold)</p>' +
+        '<p class="estado">100 frentes (gold)</p>' +
         rows.map((r) => '<a href="#gold" data-gid="' + esc(r.id) + '">' + esc(r.id) +
           '<br><span class="estado">' + esc(r.estado) + "</span></a>").join("");
       document.getElementById("main").innerHTML = '<p class="estado">Elegí un documento gold a la izquierda.</p>';
