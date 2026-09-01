@@ -295,6 +295,49 @@
           "%</td><td><div class='conf-bar" + bar + "'><i style='width:" + esc(c.confianza) + "%'></i></div></td></tr>";
       }).join("");
     }
+    function goldRows(campos) {
+      if (!campos || !campos.length) return "<tr><td colspan='5' class='muted'>Aún no hay comparación vs gold.</td></tr>";
+      return campos.map((c) => {
+        const decCls = c.conf_declarada >= 90 ? "ok" : "warn";
+        const realCls = c.conf_real >= 90 ? "ok" : "warn";
+        const gapCls = c.brecha > 5 ? "warn" : "";
+        const bar = c.conf_real < 90 ? " warn" : "";
+        const gap = (c.brecha > 0 ? "+" : "") + c.brecha.toFixed(1);
+        return "<tr><td>" + esc(c.etiqueta) + "</td><td class='" + decCls + "'>" + esc(c.conf_declarada) +
+          "%</td><td class='" + realCls + "'>" + esc(c.conf_real) + "%</td><td class='" + gapCls + "'>" + esc(gap) +
+          "</td><td><div class='conf-bar" + bar + "'><i style='width:" + esc(c.conf_real) + "%'></i></div></td></tr>";
+      }).join("");
+    }
+    function confPanel(d, conf) {
+      const g = d.gold_eval;
+      if (!g) {
+        return `<p class="estado">Confianza por campo</p>
+              <table class="mini">
+                <thead><tr><th>Campo</th><th>Confianza</th><th></th></tr></thead>
+                <tbody>${confRows(conf.campos)}</tbody>
+              </table>`;
+      }
+      const v = g.veredictos || {};
+      return `<p class="estado">Confianza por campo: declarada vs real (vs gold)</p>
+              <table class="mini">
+                <thead><tr><th>Campo</th><th>Declarada</th><th>Real</th><th>Brecha</th><th></th></tr></thead>
+                <tbody>${goldRows(g.campos)}</tbody>
+              </table>
+              <p class="estado" style="margin:.5rem 0 0">Real = coincidencia exacta con gold, normalizando espacios, acentos y mayúsculas.
+              En cédula, teléfonos, fechas y casillas un solo carácter distinto ya invalida el dato.
+              De los ${esc(g.comparaciones)} pares: ${esc(v.exacto || 0)} exactos,
+              ${esc(v.casi || 0)} recuperables (≥${esc(g.umbral_casi)}% de similitud),
+              ${esc(v.distinto || 0)} distintos.</p>`;
+    }
+    function confNota(d, spec) {
+      const g = d.gold_eval;
+      if (!g) return esc(spec.disclaimer);
+      return "Dos métricas distintas. <b>Confianza declarada</b> es lo que reporta el extractor. " +
+        "<b>Confianza real</b> es el porcentaje que coincide con <code>gold.json</code>, comparando los " +
+        esc(g.comparaciones) + " pares campo a campo de esta corrida contra los " + esc(g.gold_docs) +
+        " documentos gold. El extractor se sobrevalora " + esc(g.brecha) + " puntos: " +
+        esc(g.falsos_100) + " campos se declaran con 100% siendo distintos al gold.";
+    }
     function modelRows(modelos) {
       return (modelos || []).map((m) =>
         "<tr><td><code>" + esc(m.nombre) + "</code></td><td>" + esc(m.rol) + "</td><td>" + esc(m.donde) + "</td><td>" + esc(m.vram) + "</td></tr>"
@@ -391,11 +434,17 @@
           ${kpi(esc(d.workers || "3 OCR + 2 NLP"), "workers (prefetch=1)")}
         </div>
         <div class="kpis">
-          ${kpi(conf.general != null ? conf.general + "%" : "—", "confianza general (promedio de campos en docs listos)", confCls)}
+          ${kpi(conf.general != null ? conf.general + "%" : "—", "confianza declarada por el extractor", confCls)}
           ${kpi(esc(conf.n_docs || 0), "docs listos usados para el promedio")}
           ${gpuBox(d, spec.gpu)}
           ${kpi(String(modelos.length), "motores en este pipeline")}
-        </div>`;
+        </div>
+        ${d.gold_eval ? `<div class="kpis">
+          ${kpi(esc(d.gold_eval.conf_real) + "%", "confianza real (coincide con gold)", (d.gold_eval.conf_real || 0) >= 90 ? "ok" : "warn")}
+          ${kpi("+" + esc(d.gold_eval.brecha), "puntos de sobrevaloración", "warn")}
+          ${kpi(esc(d.gold_eval.falsos_100), "campos con 100% declarado que son distintos", "warn")}
+          ${kpi(esc(d.gold_eval.comparaciones), "pares comparados vs " + esc(d.gold_eval.gold_docs) + " docs gold")}
+        </div>` : ""}`;
       }
       const running = d.estado === "corriendo" || d.estado === "encolando";
       document.getElementById("main").innerHTML = `
@@ -405,14 +454,10 @@
           <p>${esc(estadoLine(d, spec))}</p>
           <div class="bar${running ? " run" : ""}"><i style="width:${esc(d.pct || 0)}%"></i></div>
           ${kpis}
-          <p class="estado">${esc(spec.disclaimer)}</p>
+          <p class="estado">${confNota(d, spec)}</p>
           <div class="cols">
             <div>
-              <p class="estado">Confianza por campo</p>
-              <table class="mini">
-                <thead><tr><th>Campo</th><th>Confianza</th><th></th></tr></thead>
-                <tbody>${confRows(conf.campos)}</tbody>
-              </table>
+              ${confPanel(d, conf)}
             </div>
             <div>
               <p class="estado">Modelos y VRAM</p>
