@@ -52,6 +52,7 @@
     .tabla-wrap tbody tr.active { background: #eff6ff; }
     .tabla-wrap tbody tr { cursor: pointer; }
     .muted { color: #6b7280; }
+    .gold-ref { color: #6b7280; font-size: .82em; margin-top: .1rem; }
     .lote-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(340px, 1fr); gap: 1rem; align-items: start; }
     .captura { border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; padding: .85rem 1rem 1rem; max-height: 62vh; overflow: auto; }
     .captura h2 { margin: 0 0 .35rem; font-size: 1rem; }
@@ -343,16 +344,17 @@
         "<tr><td><code>" + esc(m.nombre) + "</code></td><td>" + esc(m.rol) + "</td><td>" + esc(m.donde) + "</td><td>" + esc(m.vram) + "</td></tr>"
       ).join("");
     }
-    function capturaHtml() {
+    function capturaHtml(conGold) {
       return `<div class="captura" id="captura">
         <h2 id="cap-titulo">Captura</h2>
         <p class="estado" id="cap-estado">Sin documento</p>
         <p id="cap-ruta" class="muted">Clic en una fila de la izquierda.</p>
         <p class="warn" id="cap-error" hidden></p>
         <table>
-          <thead><tr><th>Etiqueta</th><th>Valor capturado</th><th>Confianza</th></tr></thead>
+          <thead><tr><th>Etiqueta</th><th>Valor capturado</th><th>${conGold ? "Declarada → real" : "Confianza"}</th></tr></thead>
           <tbody id="cap-campos"><tr><td colspan="3" class="muted">Todavía no hay un registro seleccionado.</td></tr></tbody>
         </table>
+        ${conGold ? '<p class="estado" style="margin:.5rem 0 0">Cuando el valor no coincide con el gold aparece debajo la transcripción de referencia. Real = 100 si coincide exacto; si no, la similitud con el gold, y 0 en los campos donde un carácter distinto ya invalida el dato.</p>' : ""}
       </div>`;
     }
     function bindCaptura(d) {
@@ -381,11 +383,23 @@
         tbody.innerHTML = "<tr><td colspan='3' class='muted'>Aún no hay campos (OCR/NLP en curso).</td></tr>";
         return;
       }
-      tbody.innerHTML = list.map((c) => {
-        const cls = (c.confianza || 0) >= 90 ? "ok" : "warn";
-        const val = (c.valor === 0 || c.valor) ? c.valor : "—";
-        return "<tr><td>" + esc(c.etiqueta) + "</td><td>" + esc(val) + "</td><td class='" + cls + "'>" + esc(c.confianza) + "%</td></tr>";
-      }).join("");
+      tbody.innerHTML = list.map(campoRow).join("");
+    }
+    function campoRow(c) {
+      const cls = (c.confianza || 0) >= 90 ? "ok" : "warn";
+      const val = (c.valor === 0 || c.valor) ? c.valor : "—";
+      let celdaValor = esc(val);
+      let celdaConf = "<td class='" + cls + "'>" + esc(c.confianza) + "%</td>";
+      if (c.conf_real != null) {
+        if (c.veredicto !== "exacto") {
+          celdaValor += "<div class='gold-ref'>gold: " + esc(c.gold || "—") + "</div>";
+        }
+        const realCls = c.conf_real >= 90 ? "ok" : "warn";
+        celdaConf = "<td" + (c.veredicto ? " title='" + esc(c.veredicto) + "'" : "") + "><span class='" + cls +
+          "'>" + esc(c.confianza) + "%</span> <span class='muted'>→</span> <span class='" + realCls + "'>" +
+          esc(c.conf_real) + "%</span></td>";
+      }
+      return "<tr><td>" + esc(c.etiqueta) + "</td><td>" + celdaValor + "</td>" + celdaConf + "</tr>";
     }
     function rowHtml(r) {
       let conf = "";
@@ -394,6 +408,10 @@
       else {
         const cls = (r.confianza || 0) >= 90 ? "ok" : "warn";
         conf = '<span class="' + cls + '">' + (r.confianza == null ? "—" : r.confianza + "%") + "</span>";
+        if (r.conf_real != null) {
+          conf += ' <span class="muted">→</span> <span class="' + (r.conf_real >= 90 ? "ok" : "warn") + '">' +
+            esc(r.conf_real) + "%</span>";
+        }
       }
       return "<tr data-id='" + esc(r.id) + "'><td>" + esc(r.n) + "</td><td>" + esc(r.formulario) + "</td><td>" +
         esc(r.estado_label) + "</td><td>" + conf + "</td><td class='muted'>" + esc(r.hora || "—") + "</td></tr>";
@@ -476,12 +494,12 @@
             <p class="estado" style="margin:0 0 .6rem">Clic en un registro para ver la captura. Primera procesada arriba.</p>
             <div class="tabla-wrap">
               <table>
-                <thead><tr><th>#</th><th>Formulario</th><th>Estado</th><th>Confianza</th><th>Hora</th></tr></thead>
+                <thead><tr><th>#</th><th>Formulario</th><th>Estado</th><th>${d.gold_eval ? "Declarada → real" : "Confianza"}</th><th>Hora</th></tr></thead>
                 <tbody id="rows">${(d.rows || []).map(rowHtml).join("")}</tbody>
               </table>
             </div>
           </div>
-          ${capturaHtml()}
+          ${capturaHtml(!!d.gold_eval)}
         </div>`;
       bindCaptura(d);
     }
@@ -543,11 +561,7 @@
           ${doc.error ? '<p class="warn">Error: ' + esc(doc.error) + "</p>" : ""}
           <table>
             <thead><tr><th>Etiqueta</th><th>Valor</th><th>Confianza</th></tr></thead>
-            <tbody>${list.length ? list.map((c) => {
-              const cls = (c.confianza || 0) >= 90 ? "ok" : "warn";
-              const val = (c.valor === 0 || c.valor) ? c.valor : "—";
-              return "<tr><td>" + esc(c.etiqueta) + "</td><td>" + esc(val) + "</td><td class='" + cls + "'>" + esc(c.confianza) + "%</td></tr>";
-            }).join("") : "<tr><td colspan='3'>Aún no hay campos.</td></tr>"}</tbody>
+            <tbody>${list.length ? list.map(campoRow).join("") : "<tr><td colspan='3'>Aún no hay campos.</td></tr>"}</tbody>
           </table>`;
       });
     }
