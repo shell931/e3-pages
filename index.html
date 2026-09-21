@@ -195,12 +195,12 @@
         nav: "Parte 8 . 2 GPU Frente mejoras + casillas",
         blurb: "Frente 2x GPU (VL-7B + NLP-7B) con mejoras + lectura de casillas por visión (no inventa marcas vacías). IDs p8*. No pisa Partes 1-7 ni gold.",
         done: "Termino. Este es el resultado del load test.",
-        note: "Vista Parte 8 . 2 GPU Frente mejoras + casillas por visión (lee_braille sin inventar SI en vacío). IDs p8*. Confianza real 76.2% (vs 74.4% original / 72.6% Parte 4).",
+        note: "Vista Parte 8 . Confianza oficial 76.2% = evaluación externa vs gold (no la autoevaluación del extractor). IDs p8*.",
         table: "Documentos parte 8 (frente, 2 GPU, mejoras)",
         ids: "p8",
         layout: "front",
         gpu: "dual",
-        disclaimer: "Confianza declarada vs real (gold). Esta corrida incluye las mejoras; misma metrica que Partes 4-7.",
+        disclaimer: "KPI oficial = evaluación externa vs gold. La confianza que declara el extractor no cuenta.",
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
@@ -310,16 +310,12 @@
       }).join("");
     }
     function goldRows(campos) {
-      if (!campos || !campos.length) return "<tr><td colspan='5' class='muted'>Aún no hay comparación vs gold.</td></tr>";
+      if (!campos || !campos.length) return "<tr><td colspan='3' class='muted'>Aún no hay comparación vs gold.</td></tr>";
       return campos.map((c) => {
-        const decCls = c.conf_declarada >= 90 ? "ok" : "warn";
         const realCls = c.conf_real >= 90 ? "ok" : "warn";
-        const gapCls = c.brecha > 5 ? "warn" : "";
         const bar = c.conf_real < 90 ? " warn" : "";
-        const gap = (c.brecha > 0 ? "+" : "") + c.brecha.toFixed(1);
-        return "<tr><td>" + esc(c.etiqueta) + "</td><td class='" + decCls + "'>" + esc(c.conf_declarada) +
-          "%</td><td class='" + realCls + "'>" + esc(c.conf_real) + "%</td><td class='" + gapCls + "'>" + esc(gap) +
-          "</td><td><div class='conf-bar" + bar + "'><i style='width:" + esc(c.conf_real) + "%'></i></div></td></tr>";
+        return "<tr><td>" + esc(c.etiqueta) + "</td><td class='" + realCls + "'>" + esc(c.conf_real) +
+          "%</td><td><div class='conf-bar" + bar + "'><i style='width:" + esc(c.conf_real) + "%'></i></div></td></tr>";
       }).join("");
     }
     function confPanel(d, conf) {
@@ -332,12 +328,12 @@
               </table>`;
       }
       const v = g.veredictos || {};
-      return `<p class="estado">Confianza por campo: declarada vs real (vs gold)</p>
+      return `<p class="estado">Confianza oficial por campo (evaluación externa vs gold)</p>
               <table class="mini">
-                <thead><tr><th>Campo</th><th>Declarada</th><th>Real</th><th>Brecha</th><th></th></tr></thead>
+                <thead><tr><th>Campo</th><th>Oficial</th><th></th></tr></thead>
                 <tbody>${goldRows(g.campos)}</tbody>
               </table>
-              <p class="estado" style="margin:.5rem 0 0">Real = coincidencia exacta con gold, normalizando espacios, acentos y mayúsculas.
+              <p class="estado" style="margin:.5rem 0 0">Oficial = coincidencia exacta con gold, normalizando espacios, acentos y mayúsculas.
               En cédula, teléfonos, fechas y casillas un solo carácter distinto ya invalida el dato.
               De los ${esc(g.comparaciones)} pares: ${esc(v.exacto || 0)} exactos,
               ${esc(v.casi || 0)} recuperables (≥${esc(g.umbral_casi)}% de similitud),
@@ -346,11 +342,10 @@
     function confNota(d, spec) {
       const g = d.gold_eval;
       if (!g) return esc(spec.disclaimer);
-      return "Dos métricas distintas. <b>Confianza declarada</b> es lo que reporta el extractor. " +
-        "<b>Confianza real</b> es el porcentaje que coincide con <code>gold.json</code>, comparando los " +
-        esc(g.comparaciones) + " pares campo a campo de esta corrida contra los " + esc(g.gold_docs) +
-        " documentos gold. El extractor se sobrevalora " + esc(g.brecha) + " puntos: " +
-        esc(g.falsos_100) + " campos se declaran con 100% siendo distintos al gold.";
+      return "<b>Confianza oficial</b>: evaluación <b>externa al pipeline</b>, comparando cada campo " +
+        "contra <code>gold.json</code> (" + esc(g.comparaciones) + " pares / " + esc(g.gold_docs) +
+        " docs). El extractor no se autoevalúa: su “confianza declarada” no cuenta como KPI. " +
+        "Oficial de esta corrida: <b>" + esc(g.conf_real) + "%</b>.";
     }
     function modelRows(modelos) {
       return (modelos || []).map((m) =>
@@ -364,10 +359,10 @@
         <p id="cap-ruta" class="muted">Clic en una fila de la izquierda.</p>
         <p class="warn" id="cap-error" hidden></p>
         <table>
-          <thead><tr><th>Etiqueta</th><th>Valor capturado</th><th>${conGold ? "Declarada → real" : "Confianza"}</th></tr></thead>
+          <thead><tr><th>Etiqueta</th><th>Valor capturado</th><th>${conGold ? "Oficial (vs gold)" : "Confianza"}</th></tr></thead>
           <tbody id="cap-campos"><tr><td colspan="3" class="muted">Todavía no hay un registro seleccionado.</td></tr></tbody>
         </table>
-        ${conGold ? '<p class="estado" style="margin:.5rem 0 0">Cuando el valor no coincide con el gold aparece debajo la transcripción de referencia. Real = 100 si coincide exacto; si no, la similitud con el gold, y 0 en los campos donde un carácter distinto ya invalida el dato.</p>' : ""}
+        ${conGold ? '<p class="estado" style="margin:.5rem 0 0">Cuando el valor no coincide con el gold aparece debajo la transcripción de referencia. Oficial = 100 si coincide exacto con gold; si no, la similitud, y 0 en campos donde un carácter distinto ya invalida el dato. No usa la autoevaluación del extractor.</p>' : ""}
       </div>`;
     }
     function bindCaptura(d) {
@@ -399,18 +394,19 @@
       tbody.innerHTML = list.map(campoRow).join("");
     }
     function campoRow(c) {
-      const cls = (c.confianza || 0) >= 90 ? "ok" : "warn";
       const val = (c.valor === 0 || c.valor) ? c.valor : "—";
       let celdaValor = esc(val);
-      let celdaConf = "<td class='" + cls + "'>" + esc(c.confianza) + "%</td>";
+      let celdaConf;
       if (c.conf_real != null) {
         if (c.veredicto !== "exacto") {
           celdaValor += "<div class='gold-ref'>gold: " + esc(c.gold || "—") + "</div>";
         }
         const realCls = c.conf_real >= 90 ? "ok" : "warn";
-        celdaConf = "<td" + (c.veredicto ? " title='" + esc(c.veredicto) + "'" : "") + "><span class='" + cls +
-          "'>" + esc(c.confianza) + "%</span> <span class='muted'>→</span> <span class='" + realCls + "'>" +
-          esc(c.conf_real) + "%</span></td>";
+        celdaConf = "<td" + (c.veredicto ? " title='" + esc(c.veredicto) + "'" : "") +
+          " class='" + realCls + "'>" + esc(c.conf_real) + "%</td>";
+      } else {
+        const cls = (c.confianza || 0) >= 90 ? "ok" : "warn";
+        celdaConf = "<td class='" + cls + "'>" + esc(c.confianza) + "%</td>";
       }
       return "<tr><td>" + esc(c.etiqueta) + "</td><td>" + celdaValor + "</td>" + celdaConf + "</tr>";
     }
@@ -418,13 +414,11 @@
       let conf = "";
       if (r.en_proceso) conf = '<span class="muted">en proceso</span>';
       else if (String(r.estado || "").startsWith("error")) conf = '<span class="warn">error</span>';
-      else {
+      else if (r.conf_real != null) {
+        conf = '<span class="' + (r.conf_real >= 90 ? "ok" : "warn") + '">' + esc(r.conf_real) + "%</span>";
+      } else {
         const cls = (r.confianza || 0) >= 90 ? "ok" : "warn";
         conf = '<span class="' + cls + '">' + (r.confianza == null ? "—" : r.confianza + "%") + "</span>";
-        if (r.conf_real != null) {
-          conf += ' <span class="muted">→</span> <span class="' + (r.conf_real >= 90 ? "ok" : "warn") + '">' +
-            esc(r.conf_real) + "%</span>";
-        }
       }
       return "<tr data-id='" + esc(r.id) + "'><td>" + esc(r.n) + "</td><td>" + esc(r.formulario) + "</td><td>" +
         esc(r.estado_label) + "</td><td>" + conf + "</td><td class='muted'>" + esc(r.hora || "—") + "</td></tr>";
@@ -465,16 +459,18 @@
           ${kpi(esc(d.workers || "3 OCR + 2 NLP"), "workers (prefetch=1)")}
         </div>
         <div class="kpis">
-          ${kpi(conf.general != null ? conf.general + "%" : "—", "confianza declarada por el extractor", confCls)}
-          ${kpi(esc(conf.n_docs || 0), "docs listos usados para el promedio")}
+          ${d.gold_eval
+            ? kpi(esc(d.gold_eval.conf_real) + "%", "confianza oficial (evaluación externa vs gold)", (d.gold_eval.conf_real || 0) >= 90 ? "ok" : "warn")
+            : kpi(conf.general != null ? conf.general + "%" : "—", "confianza (sin evaluación externa)", confCls)}
+          ${kpi(esc(d.gold_eval ? d.gold_eval.gold_docs : (conf.n_docs || 0)), d.gold_eval ? "docs gold en la evaluación" : "docs listos usados para el promedio")}
           ${gpuBox(d, spec.gpu)}
           ${kpi(String(modelos.length), "motores en este pipeline")}
         </div>
         ${d.gold_eval ? `<div class="kpis">
-          ${kpi(esc(d.gold_eval.conf_real) + "%", "confianza real (coincide con gold)", (d.gold_eval.conf_real || 0) >= 90 ? "ok" : "warn")}
-          ${kpi("+" + esc(d.gold_eval.brecha), "puntos de sobrevaloración", "warn")}
-          ${kpi(esc(d.gold_eval.falsos_100), "campos con 100% declarado que son distintos", "warn")}
-          ${kpi(esc(d.gold_eval.comparaciones), "pares comparados vs " + esc(d.gold_eval.gold_docs) + " docs gold")}
+          ${kpi(esc(d.gold_eval.comparaciones), "pares campo a campo vs gold")}
+          ${kpi(esc((d.gold_eval.veredictos || {}).exacto || 0), "pares exactos")}
+          ${kpi(esc((d.gold_eval.veredictos || {}).distinto || 0), "pares distintos")}
+          ${kpi(esc(d.gold_eval.falsos_100), "auto-100% del extractor que fallan (no KPI)", "warn")}
         </div>` : ""}`;
       }
       const running = d.estado === "corriendo" || d.estado === "encolando";
@@ -507,7 +503,7 @@
             <p class="estado" style="margin:0 0 .6rem">Clic en un registro para ver la captura. Primera procesada arriba.</p>
             <div class="tabla-wrap">
               <table>
-                <thead><tr><th>#</th><th>Formulario</th><th>Estado</th><th>${d.gold_eval ? "Declarada → real" : "Confianza"}</th><th>Hora</th></tr></thead>
+                <thead><tr><th>#</th><th>Formulario</th><th>Estado</th><th>${d.gold_eval ? "Oficial (vs gold)" : "Confianza"}</th><th>Hora</th></tr></thead>
                 <tbody id="rows">${(d.rows || []).map(rowHtml).join("")}</tbody>
               </table>
             </div>
