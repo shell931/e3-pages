@@ -200,7 +200,7 @@
         ids: "p8",
         layout: "front",
         gpu: "dual",
-        disclaimer: "KPI oficial = evaluación externa vs gold. La confianza que declara el extractor no cuenta.",
+        disclaimer: "KPI oficial = evaluación externa vs gold.",
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
@@ -344,8 +344,7 @@
       if (!g) return esc(spec.disclaimer);
       return "<b>Confianza oficial</b>: evaluación <b>externa al pipeline</b>, comparando cada campo " +
         "contra <code>gold.json</code> (" + esc(g.comparaciones) + " pares / " + esc(g.gold_docs) +
-        " docs). El extractor no se autoevalúa: su “confianza declarada” no cuenta como KPI. " +
-        "Oficial de esta corrida: <b>" + esc(g.conf_real) + "%</b>.";
+        " docs). Oficial de esta corrida: <b>" + esc(g.conf_real) + "%</b>.";
     }
     function modelRows(modelos) {
       return (modelos || []).map((m) =>
@@ -362,7 +361,7 @@
           <thead><tr><th>Etiqueta</th><th>Valor capturado</th><th>${conGold ? "Oficial (vs gold)" : "Confianza"}</th></tr></thead>
           <tbody id="cap-campos"><tr><td colspan="3" class="muted">Todavía no hay un registro seleccionado.</td></tr></tbody>
         </table>
-        ${conGold ? '<p class="estado" style="margin:.5rem 0 0">Cuando el valor no coincide con el gold aparece debajo la transcripción de referencia. Oficial = 100 si coincide exacto con gold; si no, la similitud, y 0 en campos donde un carácter distinto ya invalida el dato. No usa la autoevaluación del extractor.</p>' : ""}
+        ${conGold ? '<p class="estado" style="margin:.5rem 0 0">Cuando el valor no coincide con el gold aparece debajo la transcripción de referencia. El porcentaje de esta columna es la evaluación externa: 100 si coincide exacto con gold; si no, la similitud, y 0 en campos donde un carácter distinto ya invalida el dato.</p>' : ""}
       </div>`;
     }
     function bindCaptura(d) {
@@ -401,7 +400,7 @@
         if (c.veredicto !== "exacto") {
           celdaValor += "<div class='gold-ref'>gold: " + esc(c.gold || "—") + "</div>";
         }
-        const realCls = c.conf_real >= 90 ? "ok" : "warn";
+        const realCls = c.veredicto === "exacto" ? "ok" : "warn";
         celdaConf = "<td" + (c.veredicto ? " title='" + esc(c.veredicto) + "'" : "") +
           " class='" + realCls + "'>" + esc(c.conf_real) + "%</td>";
       } else {
@@ -469,8 +468,8 @@
         ${d.gold_eval ? `<div class="kpis">
           ${kpi(esc(d.gold_eval.comparaciones), "pares campo a campo vs gold")}
           ${kpi(esc((d.gold_eval.veredictos || {}).exacto || 0), "pares exactos")}
+          ${kpi(esc((d.gold_eval.veredictos || {}).casi || 0), "pares casi (similitud alta, no exactos)")}
           ${kpi(esc((d.gold_eval.veredictos || {}).distinto || 0), "pares distintos")}
-          ${kpi(esc(d.gold_eval.falsos_100), "auto-100% del extractor que fallan (no KPI)", "warn")}
         </div>` : ""}`;
       }
       const running = d.estado === "corriendo" || d.estado === "encolando";
