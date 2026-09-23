@@ -371,7 +371,9 @@
   similitud   si no es igual y el campo es de texto</pre>
         <p>Estrictos: número de formulario, fechas, tipo y número de documento, nivel de estudio, teléfonos, braille, discapacidad y etnia. Un carácter distinto pone la celda en 0.</p>
         <p>Texto: apellidos, nombres, correo, ciudad y dirección.</p>
+        <p class="estado">expresion regular</p>
         <pre class="formula-eq">similitud = redondeo( 100 × 2 × caracteres que coinciden / (largo del gold + largo de la lectura) )</pre>
+        <p>Ejemplo: gold Cra 93 B # 72-32 y lectura cra 93 a # 72-32 no es 0. Casi todo el texto coincide, así que esa celda queda cerca de 94.</p>
         <pre class="formula-eq">porcentaje del formulario = promedio de las notas de sus celdas
 87,8% del lote = suma de las 1.800 notas / 1.800</pre>
       </div>`;
