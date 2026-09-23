@@ -196,6 +196,7 @@
         blurb: "",
         done: "",
         hideMeta: true,
+        hideFoot: true,
         note: "Vista Parte 8 . Confianza oficial 87.8% = promedio de la evaluación por celda vs gold. Sin genero ni estado_civil. IDs p8*.",
         table: "Documentos parte 8 (frente, 2 GPU, mejoras)",
         ids: "p8",
@@ -497,10 +498,10 @@
                 <thead><tr><th>Modelo</th><th>Rol</th><th>Dónde</th><th>VRAM</th></tr></thead>
                 <tbody>${modelRows(modelos)}</tbody>
               </table>
-              <p class="estado" style="margin:.5rem 0 0">${esc(vramFooter(d, spec.vramNote))}</p>
+              ${spec.hideFoot ? "" : `<p class="estado" style="margin:.5rem 0 0">${esc(vramFooter(d, spec.vramNote))}</p>`}
             </div>
           </div>
-          <p class="estado">IDs <code>${esc(spec.ids)}${esc(d.stamp || "")}-*</code>${d.meta ? " · Meta cliente ≥" + esc(d.meta) + " docs/h." : ""} ${esc(spec.perfil)}</p>
+          ${spec.hideFoot ? "" : `<p class="estado">IDs <code>${esc(spec.ids)}${esc(d.stamp || "")}-*</code>${d.meta ? " · Meta cliente ≥" + esc(d.meta) + " docs/h." : ""} ${esc(spec.perfil)}</p>`}
         </section>
         <div class="lote-grid">
           <div>
