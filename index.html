@@ -195,7 +195,7 @@
         nav: "Parte 8 . 2 GPU Frente mejoras + casillas",
         blurb: "Frente 2x GPU + casillas por visión. Sin genero ni estado_civil (no están en el E3). IDs p8*. No pisa Partes 1-7 ni gold.",
         done: "Termino. Este es el resultado del load test.",
-        note: "Vista Parte 8 . Confianza oficial 87.8% = promedio de la evaluación por celda vs gold. Exactos 1370/1800 (76.1%). Sin genero ni estado_civil. IDs p8*.",
+        note: "Vista Parte 8 . Confianza oficial 87.8% = promedio de la evaluación por celda vs gold. Sin genero ni estado_civil. IDs p8*.",
         table: "Documentos parte 8 (frente, 2 GPU, mejoras)",
         ids: "p8",
         layout: "front",
@@ -233,7 +233,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=a1b91ab", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=sin-exacto", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
@@ -313,14 +313,12 @@
       return (campos || []).some((c) => c.exacto != null);
     }
     function goldRows(campos) {
-      const cols = tieneExacto(campos) ? 4 : 3;
-      if (!campos || !campos.length) return "<tr><td colspan='" + cols + "' class='muted'>Aún no hay comparación vs gold.</td></tr>";
+      if (!campos || !campos.length) return "<tr><td colspan='3' class='muted'>Aún no hay comparación vs gold.</td></tr>";
       return campos.map((c) => {
         const realCls = c.conf_real >= 90 ? "ok" : "warn";
         const bar = c.conf_real < 90 ? " warn" : "";
-        const ex = c.exacto == null ? "" : "<td>" + esc(c.exacto) + "%</td>";
         return "<tr><td>" + esc(c.etiqueta) + "</td><td class='" + realCls + "'>" + esc(c.conf_real) +
-          "%</td>" + ex + "<td><div class='conf-bar" + bar + "'><i style='width:" + esc(c.conf_real) + "%'></i></div></td></tr>";
+          "%</td><td><div class='conf-bar" + bar + "'><i style='width:" + esc(c.conf_real) + "%'></i></div></td></tr>";
       }).join("");
     }
     function confPanel(d, conf) {
@@ -334,21 +332,16 @@
       }
       const v = g.veredictos || {};
       const promedio = tieneExacto(g.campos);
-      const cabeza = promedio
-        ? "<th>Campo</th><th>Promedio</th><th>Exacto</th><th></th>"
-        : "<th>Campo</th><th>Oficial</th><th></th>";
+      const cabeza = "<th>Campo</th><th>" + (promedio ? "Promedio" : "Oficial") + "</th><th></th>";
       const nota = promedio
-        ? "El promedio es la evaluación de cada celda: 100 si coincide con gold; si no, la similitud en nombres, correo, dirección y ciudad; 0 en cédula, teléfonos, fechas y casillas. Exacto es la coincidencia literal. Un carácter de diferencia en dirección o correo ya no baja el promedio a cero."
-        : "Oficial = coincidencia exacta con gold, normalizando espacios, acentos y mayúsculas. En cédula, teléfonos, fechas y casillas un solo carácter distinto ya invalida el dato.";
+        ? "El promedio es la evaluación de cada celda: 100 si coincide con gold; si no, la similitud en nombres, correo, dirección y ciudad; 0 en cédula, teléfonos, fechas y casillas. Un carácter de diferencia en dirección o correo ya no baja el promedio a cero."
+        : "Oficial = coincidencia exacta con gold, normalizando espacios, acentos y mayúsculas. En cédula, teléfonos, fechas y casillas un solo carácter distinto ya invalida el dato. De los " + esc(g.comparaciones) + " pares: " + esc(v.exacto || 0) + " exactos, " + esc(v.casi || 0) + " recuperables (≥" + esc(g.umbral_casi) + "% de similitud), " + esc(v.distinto || 0) + " distintos.";
       return `<p class="estado">${promedio ? "Confianza oficial por campo (promedio de la celda vs gold)" : "Confianza oficial por campo (evaluación externa vs gold)"}</p>
               <table class="mini">
                 <thead><tr>${cabeza}</tr></thead>
                 <tbody>${goldRows(g.campos)}</tbody>
               </table>
-              <p class="estado" style="margin:.5rem 0 0">${nota}
-              De los ${esc(g.comparaciones)} pares: ${esc(v.exacto || 0)} exactos,
-              ${esc(v.casi || 0)} recuperables (≥${esc(g.umbral_casi)}% de similitud),
-              ${esc(v.distinto || 0)} distintos.</p>`;
+              <p class="estado" style="margin:.5rem 0 0">${nota}</p>`;
     }
     function confNota(d, spec) {
       const g = d.gold_eval;
@@ -356,7 +349,7 @@
       if (tieneExacto(g.campos)) {
         return "<b>Confianza oficial</b>: promedio de la evaluación <b>externa</b> por celda contra " +
           "<code>gold.json</code> (" + esc(g.comparaciones) + " pares / " + esc(g.gold_docs) +
-          " docs). Esta corrida: <b>" + esc(g.conf_real) + "%</b>. Los exactos literales siguen contados aparte.";
+          " docs). Esta corrida: <b>" + esc(g.conf_real) + "%</b>.";
       }
       return "<b>Confianza oficial</b>: evaluación <b>externa al pipeline</b>, comparando cada campo " +
         "contra <code>gold.json</code> (" + esc(g.comparaciones) + " pares / " + esc(g.gold_docs) +
@@ -483,8 +476,8 @@
         </div>
         ${d.gold_eval ? `<div class="kpis">
           ${kpi(esc(d.gold_eval.comparaciones), "pares campo a campo vs gold")}
-          ${kpi(esc((d.gold_eval.veredictos || {}).exacto || 0), "pares exactos")}
-          ${kpi(esc((d.gold_eval.veredictos || {}).casi || 0), "pares casi (similitud alta, no exactos)")}
+          ${tieneExacto(d.gold_eval.campos) ? "" : kpi(esc((d.gold_eval.veredictos || {}).exacto || 0), "pares exactos")}
+          ${kpi(esc((d.gold_eval.veredictos || {}).casi || 0), tieneExacto(d.gold_eval.campos) ? "pares casi (similitud alta)" : "pares casi (similitud alta, no exactos)")}
           ${kpi(esc((d.gold_eval.veredictos || {}).distinto || 0), "pares distintos")}
         </div>` : ""}`;
       }
