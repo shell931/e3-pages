@@ -335,14 +335,14 @@
       const promedio = tieneExacto(g.campos);
       const cabeza = "<th>Campo</th><th>" + (promedio ? "Promedio" : "Oficial") + "</th><th></th>";
       const nota = promedio
-        ? "El promedio es la evaluación de cada celda: 100 si coincide con gold; si no, la similitud en nombres, correo, dirección y ciudad; 0 en cédula, teléfonos, fechas y casillas. Un carácter de diferencia en dirección o correo ya no baja el promedio a cero."
+        ? ""
         : "Oficial = coincidencia exacta con gold, normalizando espacios, acentos y mayúsculas. En cédula, teléfonos, fechas y casillas un solo carácter distinto ya invalida el dato. De los " + esc(g.comparaciones) + " pares: " + esc(v.exacto || 0) + " exactos, " + esc(v.casi || 0) + " recuperables (≥" + esc(g.umbral_casi) + "% de similitud), " + esc(v.distinto || 0) + " distintos.";
       return `<p class="estado">${promedio ? "Confianza oficial por campo (promedio de la celda vs gold)" : "Confianza oficial por campo (evaluación externa vs gold)"}</p>
               <table class="mini">
                 <thead><tr>${cabeza}</tr></thead>
                 <tbody>${goldRows(g.campos)}</tbody>
               </table>
-              <p class="estado" style="margin:.5rem 0 0">${nota}</p>`;
+              ${nota ? `<p class="estado" style="margin:.5rem 0 0">${nota}</p>` : ""}`;
     }
     function confNota(d, spec) {
       const g = d.gold_eval;
