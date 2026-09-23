@@ -194,7 +194,8 @@
       parte8: {
         nav: "Parte 8 . 2 GPU Frente mejoras + casillas",
         blurb: "",
-        done: "Termino. Este es el resultado del load test.",
+        done: "",
+        hideMeta: true,
         note: "Vista Parte 8 . Confianza oficial 87.8% = promedio de la evaluación por celda vs gold. Sin genero ni estado_civil. IDs p8*.",
         table: "Documentos parte 8 (frente, 2 GPU, mejoras)",
         ids: "p8",
@@ -298,7 +299,7 @@
       if (d.estado === "encolando") return "Encolando en Rabbit…";
       if (d.estado === "corriendo") return "En curso — esta vista se actualiza sola.";
       if (d.estado === "timeout") return "Terminó por timeout (quedaron docs en cola).";
-      return spec.done;
+      return spec.done || "";
     }
     function confRows(campos) {
       if (!campos || !campos.length) return "<tr><td colspan='3' class='muted'>Aún no hay docs listos con campos.</td></tr>";
@@ -346,11 +347,7 @@
     function confNota(d, spec) {
       const g = d.gold_eval;
       if (!g) return esc(spec.disclaimer);
-      if (tieneExacto(g.campos)) {
-        return "<b>Confianza oficial</b>: promedio de la evaluación <b>externa</b> por celda contra " +
-          "<code>gold.json</code> (" + esc(g.comparaciones) + " pares / " + esc(g.gold_docs) +
-          " docs). Esta corrida: <b>" + esc(g.conf_real) + "%</b>.";
-      }
+      if (tieneExacto(g.campos)) return "";
       return "<b>Confianza oficial</b>: evaluación <b>externa al pipeline</b>, comparando cada campo " +
         "contra <code>gold.json</code> (" + esc(g.comparaciones) + " pares / " + esc(g.gold_docs) +
         " docs). Oficial de esta corrida: <b>" + esc(g.conf_real) + "%</b>.";
@@ -458,7 +455,7 @@
           ${kpi(esc(d.listo) + "/" + esc(d.jobs), "listos (<span>" + esc(d.pct) + "</span>%)")}
           ${kpi(esc(dph(d)), "docs/h (meta " + esc(d.meta) + ")")}
           ${kpi(esc(d.elapsed_fmt), "tiempo transcurrido")}
-          ${kpi(d.cumple_meta ? "sí" : "no", "cumple ≥ " + esc(d.meta) + " docs/h", metaCls)}
+          ${spec.hideMeta ? "" : kpi(d.cumple_meta ? "sí" : "no", "cumple ≥ " + esc(d.meta) + " docs/h", metaCls)}
         </div>
         <div class="kpis">
           ${kpi(esc(d.errores), "errores OCR/NLP")}
@@ -486,10 +483,10 @@
         <section class="resumen">
           <h1>${esc(d.titulo || spec.nav)}</h1>
           ${spec.blurb ? `<p class="estado">${esc(spec.blurb)}</p>` : ""}
-          <p>${esc(estadoLine(d, spec))}</p>
+          ${estadoLine(d, spec) ? `<p>${esc(estadoLine(d, spec))}</p>` : ""}
           <div class="bar${running ? " run" : ""}"><i style="width:${esc(d.pct || 0)}%"></i></div>
           ${kpis}
-          <p class="estado">${confNota(d, spec)}</p>
+          ${confNota(d, spec) ? `<p class="estado">${confNota(d, spec)}</p>` : ""}
           <div class="cols">
             <div>
               ${confPanel(d, conf)}
