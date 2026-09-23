@@ -57,6 +57,9 @@
     .captura { border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; padding: .85rem 1rem 1rem; max-height: 62vh; overflow: auto; }
     .captura h2 { margin: 0 0 .35rem; font-size: 1rem; }
     .captura table { margin-top: .5rem; }
+    .formula { margin-top: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; padding: .85rem 1rem 1rem; }
+    .formula p { margin: .35rem 0; font-size: .9rem; line-height: 1.45; }
+    .formula-eq { margin: .45rem 0; padding: .55rem .7rem; background: #f9fafb; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; line-height: 1.45; white-space: pre-wrap; }
     .login {
       min-height: 100vh; display: grid; place-items: center;
       background: #111827; color: #e5e7eb;
@@ -358,6 +361,21 @@
         "<tr><td><code>" + esc(m.nombre) + "</code></td><td>" + esc(m.rol) + "</td><td>" + esc(m.donde) + "</td><td>" + esc(m.vram) + "</td></tr>"
       ).join("");
     }
+    function formulaOficial() {
+      return `<div class="formula">
+        <p class="estado">Cómo se calcula Oficial (vs gold)</p>
+        <p>Gold y lectura se normalizan antes de comparar: minúsculas, sin tildes y espacios repetidos colapsados.</p>
+        <pre class="formula-eq">nota de la celda =
+  100         si el texto normalizado es igual
+  0           si no es igual y el campo es estricto
+  similitud   si no es igual y el campo es de texto</pre>
+        <p>Estrictos: número de formulario, fechas, tipo y número de documento, nivel de estudio, teléfonos, braille, discapacidad y etnia. Un carácter distinto pone la celda en 0.</p>
+        <p>Texto: apellidos, nombres, correo, ciudad y dirección.</p>
+        <pre class="formula-eq">similitud = redondeo( 100 × 2 × caracteres que coinciden / (largo del gold + largo de la lectura) )</pre>
+        <pre class="formula-eq">porcentaje del formulario = promedio de las notas de sus celdas
+87,8% del lote = suma de las 1.800 notas / 1.800</pre>
+      </div>`;
+    }
     function capturaHtml(conGold) {
       return `<div class="captura" id="captura">
         <h2 id="cap-titulo">Captura</h2>
@@ -515,7 +533,8 @@
             </div>
           </div>
           ${capturaHtml(!!d.gold_eval)}
-        </div>`;
+        </div>
+        ${d.gold_eval && tieneExacto(d.gold_eval.campos) ? formulaOficial() : ""}`;
       bindCaptura(d);
     }
     function renderHome() {
