@@ -268,7 +268,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=parte10b", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=parte10c", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
