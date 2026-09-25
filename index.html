@@ -209,8 +209,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      parte9: {
+        nav: "Parte 9 . gold_v2 telefonos + discapacidad",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Vista Parte 9 . 88.9% = promedio vs gold_v2 (telefonos confirmados por foto). Misma corrida vs gold original: 87.7%. Discapacidad 82→90. IDs p9*.",
+        table: "Documentos parte 9 (frente, gold_v2 + NINGUNA)",
+        ids: "p9",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_v2. Parte 8 queda intacta.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9"];
     let vault = null;
 
     function esc(s) {
@@ -238,7 +253,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=sin-exacto", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=parte9", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
