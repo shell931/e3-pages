@@ -239,8 +239,38 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      parte11: {
+        nav: "Parte 11 . casillas NINGUNA>=2 + throughput",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Vista Parte 11 . 89.5% = promedio vs gold_v2. Misma corrida vs gold: 88.4%. NINGUNA si marcadas>=2; sin VL de fijo; prompt nombres/email. KPI plano vs Parte 10. IDs p11*.",
+        table: "Documentos parte 11 (frente, casillas + throughput)",
+        ids: "p11",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_v2. No reemplaza Parte 10 como mejor resultado.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
+      parte12: {
+        nav: "Parte 12 . VL 3B digitos/casillas (descartado)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Vista Parte 12 . 71.0% = promedio vs gold_v2. Misma corrida vs gold: 69.8%. Crops en Qwen2.5-VL-3B; pagina en 7B. Casillas colapsan; docs/h ~872 sin ganancia. Experimento descartado. IDs p12*.",
+        table: "Documentos parte 12 (frente, VL 3B crops)",
+        ids: "p12",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "Experimento. No usar como baseline. KPI oficial = promedio vs gold_v2.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12"];
     let vault = null;
 
     function esc(s) {
@@ -268,7 +298,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=parte10d", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=parte12a", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
