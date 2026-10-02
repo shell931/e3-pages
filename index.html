@@ -270,17 +270,17 @@
         perfil: "Perfil front (300 dpi).",
       },
       lote2p10: {
-        nav: "Lote E3V2 . Parte 10 (267, sin gold)",
+        nav: "Lote E3V2 . Parte 10 (267, gold 92.2%)",
         blurb: "",
         done: "",
         hideMeta: true,
         hideFoot: true,
-        note: "Lote nuevo E3V2 (S3 forme3/E3V2/front_300, 267 frentes 300 dpi) con el pipeline Parte 10 tal cual, en servidor nuevo. 873 docs/h. Sin gold: la confianza es la declarada por el extractor, no conf_real; no comparable con el 89.6% de Parte 10.",
+        note: "Lote nuevo E3V2 (S3 forme3/E3V2/front_300, 267 frentes 300 dpi) con el pipeline Parte 10 tal cual, en servidor nuevo. 873 docs/h. KPI oficial 92.2% = promedio de conf_real por celda vs gold_e3 (267 docs, 4775 celdas). Lote y gold distintos a los de Parte 10 (89.6% vs gold_v2).",
         table: "Documentos lote E3V2 (Parte 10)",
         ids: "l2",
         layout: "front",
         gpu: "dual",
-        disclaimer: "Sin gold todavía. Cuando exista gold de este lote se calcula la confianza oficial.",
+        disclaimer: "KPI oficial = promedio vs gold_e3. Casillas con 2+ marcas en el gold cuentan como vacío.",
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
@@ -313,7 +313,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2a", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2g", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
