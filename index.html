@@ -284,8 +284,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p10b: {
+        nav: "Lote E3V2 . Parte 10 + comunidad tapada (gold 92.1%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Mismo lote E3V2 y mismo gold_e3. Unico cambio: en el recorte de discapacidad+etnia se pinta de blanco la caja A QUE COMUNIDAD DE LA ETNIA PERTENECE (un Ninguna manuscrito ahi se leia como discapacidad NINGUNA; caso 6000000041, ahora vacio = gold). KPI oficial 92.1% vs 92.2% de la corrida anterior: diferencia dentro del ruido entre corridas (~0.3 pts; etnia cambia ~30 celdas entre corridas identicas por el batching de vLLM).",
+        table: "Documentos lote E3V2 (Parte 10 + comunidad tapada)",
+        ids: "l2b",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_e3. Casillas con 2+ marcas en el gold cuentan como vacio.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b"];
     let vault = null;
 
     function esc(s) {
@@ -313,7 +328,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2m", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2b", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
