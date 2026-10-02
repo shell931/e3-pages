@@ -299,8 +299,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p10c: {
+        nav: "Lote E3V2 . Parte 10 + comunidad_etnia (gold 92.1%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Mismo lote E3V2 y gold_e3, con comunidad tapada en casillas y un campo nuevo: comunidad_etnia (A QUE COMUNIDAD DE LA ETNIA PERTENECE), leido con un recorte propio de la caja en el VL 7B. comunidad_etnia 95.3% conf_real. KPI oficial 92.1% con 19 campos; los 18 de antes 91.9%, dentro del ruido entre corridas (91.9-92.6). 10 frentes vienen con E-3 + E-4 en una pagina alta y ahi los recortes no caen en su caja.",
+        table: "Documentos lote E3V2 (Parte 10 + comunidad_etnia)",
+        ids: "l2c",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_e3 (19 campos). Casillas con 2+ marcas en el gold cuentan como vacio.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c"];
     let vault = null;
 
     function esc(s) {
@@ -328,7 +343,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2b", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2c", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
