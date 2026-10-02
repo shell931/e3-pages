@@ -269,8 +269,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p10: {
+        nav: "Lote E3V2 . Parte 10 (267, sin gold)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Lote nuevo E3V2 (S3 forme3/E3V2/front_300, 267 frentes 300 dpi) con el pipeline Parte 10 tal cual, en servidor nuevo. 873 docs/h. Sin gold: la confianza es la declarada por el extractor, no conf_real; no comparable con el 89.6% de Parte 10.",
+        table: "Documentos lote E3V2 (Parte 10)",
+        ids: "l2",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "Sin gold todavía. Cuando exista gold de este lote se calcula la confianza oficial.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10"];
     let vault = null;
 
     function esc(s) {
@@ -298,7 +313,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=parte12a", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2a", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
