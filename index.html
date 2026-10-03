@@ -314,8 +314,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p10d: {
+        nav: "Lote E3V2 . Parte 10 + comunidad_etnia + solo E-3 (gold 93.4%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Igual que el menu anterior (comunidad tapada + campo comunidad_etnia) y ademas: si el escaneo trae E-3 + E-4 en una misma pagina (alto > 1.05 x ancho), se procesa solo el E-3 de arriba con la proporcion de un E-3 normal. Fueron 10 de 267; en esos 10 el promedio paso de 72.2% a 92.5%. KPI oficial 93.4% (19 campos); los 18 de antes 93.2%.",
+        table: "Documentos lote E3V2 (Parte 10 + comunidad_etnia + solo E-3)",
+        ids: "l2d",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_e3 (19 campos). Casillas con 2+ marcas en el gold cuentan como vacio.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d"];
     let vault = null;
 
     function esc(s) {
@@ -343,7 +358,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2c", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2d", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
