@@ -350,7 +350,7 @@
         done: "",
         hideMeta: true,
         hideFoot: true,
-        note: "Pipeline del menu anterior (comunidad tapada + comunidad_etnia + solo E-3 + direccion sin inventos) y dos campos nuevos del pie INFORMACION DEL FUNCIONARIO ELECTORAL: funcionario_cedula (cuadritos, solo digitos) y funcionario_nombre (manuscrito literal). El nombre se lee dos veces: la segunda pide letra por letra aunque no parezca un nombre real; si difieren (similitud < 90) queda con confianza 60 y marcado revisar, con la segunda lectura en el detalle. Marca 37 de 267, 31 de ellos mal (caso 6000000306 Luz leido como Jose). Comparados con gold_e3_obtenido-con-fable: funcionario_cedula 73.8% exacta, funcionario_nombre 92.5%. KPI oficial 92.4% con 21 campos; los 19 de antes 93.3%. 852 docs/h.",
+        note: "",
         table: "Documentos lote E3V2 (Parte 14, con funcionario)",
         ids: "l2p14",
         layout: "front",
@@ -608,7 +608,7 @@
       const d = vault.partes[key] || {};
       const conf = d.confianza || {};
       const modelos = d.modelos || [];
-      document.getElementById("side-note").innerHTML = '<p class="estado">' + esc(spec.note) + "</p>";
+      document.getElementById("side-note").innerHTML = spec.note ? '<p class="estado">' + esc(spec.note) + "</p>" : "";
       const confCls = (conf.general || 0) >= 90 ? "ok" : "warn";
       const metaCls = d.cumple_meta ? "ok" : "warn";
       let kpis = "";
