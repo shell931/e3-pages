@@ -350,12 +350,12 @@
         done: "",
         hideMeta: true,
         hideFoot: true,
-        note: "Pipeline del menu anterior (comunidad tapada + comunidad_etnia + solo E-3 + direccion sin inventos) y dos campos nuevos del pie INFORMACION DEL FUNCIONARIO ELECTORAL: funcionario_cedula (cuadritos, solo digitos) y funcionario_nombre (manuscrito literal), cada uno con su recorte en el VL 7B. Comparados con gold_e3_obtenido-con-fable: funcionario_cedula 74.5% exacta (el error tipico es un digito perdido en cedulas de 10), funcionario_nombre 92.7%. KPI oficial 92.5% con 21 campos; los 19 de antes 93.4% (antes 93.2%, ruido). 860 docs/h.",
+        note: "Pipeline del menu anterior (comunidad tapada + comunidad_etnia + solo E-3 + direccion sin inventos) y dos campos nuevos del pie INFORMACION DEL FUNCIONARIO ELECTORAL: funcionario_cedula (cuadritos, solo digitos) y funcionario_nombre (manuscrito literal). El nombre se lee dos veces: la segunda pide letra por letra aunque no parezca un nombre real; si difieren (similitud < 90) queda con confianza 60 y marcado revisar, con la segunda lectura en el detalle. Marca 37 de 267, 31 de ellos mal (caso 6000000306 Luz leido como Jose). Comparados con gold_e3_obtenido-con-fable: funcionario_cedula 73.8% exacta, funcionario_nombre 92.5%. KPI oficial 92.4% con 21 campos; los 19 de antes 93.3%. 852 docs/h.",
         table: "Documentos lote E3V2 (Parte 14, con funcionario)",
         ids: "l2p14",
         layout: "front",
         gpu: "dual",
-        disclaimer: "KPI oficial = promedio vs gold_e3 (21 campos, incluye funcionario_cedula y funcionario_nombre). Cedula del funcionario estricta (0/100).",
+        disclaimer: "KPI oficial = promedio vs gold_e3 (21 campos, incluye funcionario_cedula y funcionario_nombre). revisar = dos lecturas distintas (nombre del funcionario y direccion).",
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
@@ -388,7 +388,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2p14b", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2p14c", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
@@ -573,6 +573,10 @@
       const val = (c.valor === 0 || c.valor) ? c.valor : "—";
       let celdaValor = esc(val);
       let celdaConf;
+      if (c.revisar) {
+        celdaValor += "<div class='gold-ref'><span class='warn'>revisar</span>" +
+          (c.segunda_lectura ? " · 2ª lectura: " + esc(c.segunda_lectura) : "") + "</div>";
+      }
       if (c.conf_real != null) {
         if (c.veredicto !== "exacto") {
           celdaValor += "<div class='gold-ref'>gold: " + esc(c.gold || "—") + "</div>";
