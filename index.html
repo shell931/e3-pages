@@ -329,8 +329,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p10e: {
+        nav: "Lote E3V2 . Parte 10 + direccion sin inventos (gold 93.2%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Igual que el menu anterior (comunidad tapada + comunidad_etnia + solo E-3) y ademas direccion: prompt sin ejemplos de complementos (Torre, Apto, Etapa), no se acepta un complemento que solo ve el recorte, y doble lectura del recorte: si no coinciden la direccion queda con confianza 60 y marcada revisar. Complementos inventados 3 -> 0 (caso 6000000075 'apto'). direccion 90.4% (antes 90.7%, ruido). KPI oficial 93.2% (19 campos), dentro del ruido del 93.4%.",
+        table: "Documentos lote E3V2 (Parte 10 + direccion sin inventos)",
+        ids: "l2e",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_e3 (19 campos). Direcciones con confianza 60 = dos lecturas distintas, revisar.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e"];
     let vault = null;
 
     function esc(s) {
@@ -358,7 +373,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2d", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2e", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
