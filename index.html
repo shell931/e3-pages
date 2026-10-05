@@ -344,8 +344,23 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p14: {
+        nav: "Lote E3V2 . Parte 14 (analisis 256 formularios)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Pipeline del menu anterior (comunidad tapada + comunidad_etnia + solo E-3 + direccion sin inventos) y dos campos nuevos del pie INFORMACION DEL FUNCIONARIO ELECTORAL: funcionario_cedula (cuadritos, solo digitos) y funcionario_nombre (manuscrito literal), cada uno con su recorte ampliado en el VL 7B. Se leyeron en los 267 frentes. El gold_e3 del servidor no trae esas dos columnas: todavia no entran al KPI; revision visual de 23 formularios: cedula exacta en 17. KPI oficial 93.3% (19 campos con gold), igual al 93.2% anterior dentro del ruido. 845 docs/h.",
+        table: "Documentos lote E3V2 (Parte 14, con funcionario)",
+        ids: "l2p14",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_e3 (19 campos). funcionario_cedula y funcionario_nombre se muestran sin gold hasta cargar esas columnas.",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi).",
+      },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e", "lote2p14"];
     let vault = null;
 
     function esc(s) {
@@ -373,7 +388,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2e", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2p14", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
