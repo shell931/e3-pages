@@ -344,6 +344,21 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi).",
       },
+      lote2p15: {
+        nav: "Lote E3V2 · Parte 15 (Qwen3.6-27B-FP8 dual, 95.7%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: true,
+        note: "Mismo gold de 21 campos (267 frentes). VL Qwen3.6-27B-FP8 en dual (2 réplicas) + NLP 7B-AWQ. Logprobs reales (LP_UMBRAL=80) marcan revisar; DIR_NORMALIZAR unifica formato sin expandir tipo de vía. Baseline Parte 14: 92.4% → 95.7% conf_real, 934 docs/h.",
+        table: "Documentos lote E3V2 (Parte 15, Qwen3.6-27B-FP8 dual)",
+        ids: "l2p15",
+        layout: "front",
+        gpu: "dual",
+        disclaimer: "KPI oficial = promedio vs gold_lote2 (21 campos). revisar = conf_lp < 80 o doble lectura distinta (dirección/funcionario).",
+        vramNote: "dual5",
+        perfil: "Perfil front (300 dpi). Modelo VL FP8 dual.",
+      },
       lote2p14: {
         nav: "Lote E3V2 . Parte 14 (analisis 256 formularios)",
         blurb: "",
@@ -360,7 +375,7 @@
         perfil: "Perfil front (300 dpi).",
       },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e", "lote2p14"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e", "lote2p14", "lote2p15"];
     let vault = null;
 
     function esc(s) {
@@ -388,7 +403,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2p14c", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2p15", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
@@ -574,8 +589,14 @@
       let celdaValor = esc(val);
       let celdaConf;
       if (c.revisar) {
-        celdaValor += "<div class='gold-ref'><span class='warn'>revisar</span>" +
+        const por = Array.isArray(c.revisar_por) && c.revisar_por.length
+          ? " · " + esc(c.revisar_por.join(", "))
+          : "";
+        const lp = c.conf_lp != null ? " · conf_lp " + esc(c.conf_lp) + "%" : "";
+        celdaValor += "<div class='gold-ref'><span class='warn'>revisar</span>" + por + lp +
           (c.segunda_lectura ? " · 2ª lectura: " + esc(c.segunda_lectura) : "") + "</div>";
+      } else if (c.conf_lp != null) {
+        celdaValor += "<div class='gold-ref muted'>conf_lp " + esc(c.conf_lp) + "%</div>";
       }
       if (c.conf_real != null) {
         if (c.veredicto !== "exacto") {
