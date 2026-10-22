@@ -631,9 +631,9 @@
         celdaValor += "<div class='gold-ref muted'>conf_lp " + esc(c.conf_lp) + "%</div>";
       }
       if (c.conf_real != null) {
-        if (c.veredicto !== "exacto") {
-          celdaValor += "<div class='gold-ref'>gold: " + esc(c.gold || "—") + "</div>";
-        }
+        // siempre visible (antes solo si no coincidía): gris si coincide, valor en ámbar si no
+        const g = esc((c.gold === 0 || c.gold) ? c.gold : "(vacío)");
+        celdaValor += "<div class='gold-ref'>— gold: " + (c.veredicto === "exacto" ? g : "<span class='warn'>" + g + "</span>") + "</div>";
         const realCls = c.veredicto === "exacto" ? "ok" : "warn";
         celdaConf = "<td" + (c.veredicto ? " title='" + esc(c.veredicto) + "'" : "") +
           " class='" + realCls + "'>" + esc(c.conf_real) + "%</td>";
