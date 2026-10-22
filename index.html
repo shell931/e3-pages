@@ -359,6 +359,36 @@
         vramNote: "dual5",
         perfil: "Perfil front (300 dpi). Modelo VL FP8 dual.",
       },
+      lote2p16: {
+        nav: "Lote E3V2 · Parte 16 (Turing · 27B-FP8 en T4, 95.5%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: false,
+        note: "Validación de compatibilidad para el Dell R740xd con 2× Quadro RTX 8000 (Turing). Mismo pipeline, modelos, revisiones e imagen vLLM que la Parte 15, en AWS g4dn.metal (8× Tesla T4 16 GB, misma arquitectura Turing sm_75). Cambios forzados por Turing: FP16 en vez de BF16, FP8 solo pesos (Marlin W8A16), atención TRITON_ATTN (sin FlashAttention 2), VL repartido en 4 GPUs (TP=4) por ser de 16 GB. Resultado: 95.5% conf_real vs 95.7% en Parte 15 (ruido); AUC conf_lp 92.0 igual; exactitud tras revisar 97.2% igual. Los docs/h (59.6) no representan al Dell: T4 es más lenta y TP=4 va por PCIe.",
+        table: "Documentos lote E3V2 (Parte 16, Turing, Qwen3.6-27B-FP8)",
+        ids: "l2p16",
+        layout: "front",
+        gpu: "turing",
+        disclaimer: "KPI oficial = promedio vs gold_lote2 (21 campos). revisar = conf_lp < 80 o doble lectura distinta (dirección/funcionario).",
+        vramNote: "turing",
+        perfil: "Perfil front (300 dpi). g4dn.metal · driver 580.178.04 · vLLM 0.29.0.",
+      },
+      lote2p16b: {
+        nav: "Lote E3V2 · Parte 16b (Turing · control VL 7B, 92.6%)",
+        blurb: "",
+        done: "",
+        hideMeta: true,
+        hideFoot: false,
+        note: "Control de la Parte 16: pipeline Parte 15 con el VL Qwen2.5-VL-7B en Turing (FP16, TP=2 en 2× T4). Sirve para aislar el efecto del hardware: el mismo control en la Parte 15 dio 92.3%; en Turing 92.6%. formulario_no corregido por el nombre de archivo (prefijo de S3) antes de calcular el KPI.",
+        table: "Documentos lote E3V2 (Parte 16b, Turing, control 7B)",
+        ids: "l2p16b",
+        layout: "front",
+        gpu: "turing",
+        disclaimer: "KPI oficial = promedio vs gold_lote2 (21 campos).",
+        vramNote: "turing",
+        perfil: "Perfil front (300 dpi). g4dn.metal · driver 580.178.04 · vLLM 0.29.0.",
+      },
       lote2p14: {
         nav: "Lote E3V2 . Parte 14 (analisis 256 formularios)",
         blurb: "",
@@ -375,7 +405,7 @@
         perfil: "Perfil front (300 dpi).",
       },
     };
-    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e", "lote2p14", "lote2p15"];
+    const PARTE_KEYS = ["lote", "finger", "parte3", "parte4", "parte5", "parte6", "parte7", "parte8", "parte9", "parte10", "parte11", "parte12", "lote2p10", "lote2p10b", "lote2p10c", "lote2p10d", "lote2p10e", "lote2p14", "lote2p15", "lote2p16", "lote2p16b"];
     let vault = null;
 
     function esc(s) {
@@ -403,7 +433,7 @@
       );
     }
     async function unlock(user, pass) {
-      const wrap = await fetch("data/vault.json?v=lote2p15", { cache: "no-store" }).then((r) => {
+      const wrap = await fetch("data/vault.json?v=lote2p16", { cache: "no-store" }).then((r) => {
         if (!r.ok) throw new Error("no está vault.json");
         return r.json();
       });
@@ -454,6 +484,7 @@
       if (mode === "vl32") return kpi("VL-32B-AWQ", "GPU 0 · NLP 7B en GPU 1");
       if (mode === "finger") return kpi("500 dpi", "perfil finger · IDs fg*");
       if (mode === "finger2") return kpi("500 dpi", "perfil finger · 2× GPU");
+      if (mode === "turing") return kpi(esc(v.used_gb) + " / " + esc(v.total_gb) + " GB", "8× T4 16 GB (Turing) · nvidia-smi");
       return kpi(esc(v.used_gb) + " / " + esc(v.total_gb) + " GB", esc(v.gpu || "") + " · nvidia-smi");
     }
     function vramFooter(d, mode) {
@@ -462,6 +493,7 @@
       if (mode === "dual5") return "Dos GPUs: VL ~83 GB en GPU 0, NLP ~40 GB en GPU 1. Docling no ocupa VRAM. RapidOCR de ROIs está apagado.";
       if (mode === "p6") return "Dos GPUs: VL-7B GPU 0, NLP-7B GPU 1. Mismo stack que Parte 5, otras imágenes.";
       if (mode === "p7") return "GPU 0 ~89 GB (32B-AWQ). GPU 1 NLP 7B. El 32B es más lento que el 7B; no se espera superar a Parte 5 en docs/h.";
+      if (mode === "turing") return "VRAM por GPU (nvidia-smi al levantar): " + (v.por_gpu || []).map((g) => "GPU " + g.idx + " " + (g.mib / 1024).toFixed(1) + " GB").join(" · ") + ". Cada T4 tiene 15 GB. En el Dell cada RTX 8000 tiene 48 GB: una réplica del 27B por GPU, sin TP.";
       return "Total GPU ~" + (v.used_gb || "—") + " GB / " + (v.total_gb || "—") + " GB (" + (v.used_mib || "—") + " / " + (v.total_mib || "—") + " MiB). Docling y RapidOCR no ocupan VRAM.";
     }
     function estadoLine(d, spec) {
